@@ -6,3 +6,7 @@ images/*
 !images/.keep
 node_modules/
 package-lock.json
+img/tiles/*
+!img/tiles/.keep
+data/generated/*
+!data/generated/.keep
