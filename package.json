@@ -1,10 +1,10 @@
 {
-  "name": "image-collection",
-  "description": "AMNH image collection visualizer",
+  "name": "image-tsne-ui",
+  "description": "An interface visualizing image collections using TSNE",
   "scripts": {
     "start": "node server.js"
   },
   "devDependencies": {
-    "express": "^4.16.4"
+    "express": "^4.17.1"
   }
 }
