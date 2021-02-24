@@ -2,28 +2,35 @@
 
 import argparse
 import glob
+import math
 import numpy as np
+import os
 from PIL import Image
 from pprint import pprint
-import random
+import rasterfairy
 import sys
 
 from lib.utils import *
 
 # input
 parser = argparse.ArgumentParser()
-parser.add_argument('-in', dest="INPUT_FILE", default="data/photographic_grid.csv", help="Input csv file with grid assignments")
+parser.add_argument('-in', dest="INPUT_FILE", default="data/photographic_tsne.csv", help="Input csv file")
 parser.add_argument('-im', dest="IMAGE_FILES", default="images/photographic_thumbnails/*.jpg", help="Input file pattern")
 parser.add_argument('-tile', dest="TILE_SIZE", default="128x128", help="Tile size in pixels")
-parser.add_argument('-grid', dest="GRID_SIZE", default="114x116", help="Grid size in cols x rows")
 parser.add_argument('-resize', dest="RESIZE_TYPE", default="fill", help="Resize type: contain or fill")
 parser.add_argument('-out', dest="OUTPUT_FILE", default="output/photographic_matrix.jpg", help="File for output")
 a = parser.parse_args()
 
-grid = np.loadtxt(a.INPUT_FILE, delimiter=",")
-
 tileW, tileH = tuple([int(t) for t in a.TILE_SIZE.split("x")])
-gridW, gridH = tuple([int(t) for t in a.GRID_SIZE.split("x")])
+model = np.loadtxt(a.INPUT_FILE, delimiter=",")
+count = len(model)
+
+print("Determining grid assignment...")
+gridAssignment = rasterfairy.transformPointCloud2D(model)
+grid, gridShape = gridAssignment
+print("Resulting shape: %s x %s" % gridShape)
+gridW, gridH = gridShape
+
 imgW, imgH = (gridW * tileW, gridH * tileH)
 tileCount = gridW * gridH
 filenames = glob.glob(a.IMAGE_FILES)

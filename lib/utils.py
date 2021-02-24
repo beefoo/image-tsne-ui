@@ -12,10 +12,12 @@ def containImage(img, w, h, resampleType="default", bgcolor=[0,0,0]):
         return img
 
     # create a base image
-    w = roundInt(w)
-    h = roundInt(h)
+    w = int(round(w))
+    h = int(round(h))
     if img.mode=="RGBA" and len(bgcolor)==3:
         bgcolor.append(0)
+    elif img.mode=="L":
+        bgcolor = bgcolor[:1]
     baseImg = Image.new(mode=img.mode, size=(w, h), color=tuple(bgcolor))
 
     ratio = 1.0 * w / h
@@ -28,13 +30,13 @@ def containImage(img, w, h, resampleType="default", bgcolor=[0,0,0]):
     pasteY = 0
     if vratio > ratio:
         newH = w / vratio
-        pasteY = roundInt((h-newH) * 0.5)
+        pasteY = int(round((h-newH) * 0.5))
     else:
         newW = h * vratio
-        pasteX = roundInt((w-newW) * 0.5)
+        pasteX = int(round((w-newW) * 0.5))
 
     # Lanczos = good for downsizing
-    resized = img.resize((roundInt(newW), roundInt(newH)), resample=resampleType)
+    resized = img.resize((int(round(newW)), int(round(newH))), resample=resampleType)
     baseImg.paste(resized, (pasteX, pasteY))
     return baseImg
 
