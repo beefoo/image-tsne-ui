@@ -16,6 +16,7 @@ parser.add_argument('-in', dest="INPUT_FILE", default="data/photographic_grid.cs
 parser.add_argument('-im', dest="IMAGE_FILES", default="images/photographic_thumbnails/*.jpg", help="Input file pattern")
 parser.add_argument('-tile', dest="TILE_SIZE", default="128x128", help="Tile size in pixels")
 parser.add_argument('-grid', dest="GRID_SIZE", default="114x116", help="Grid size in cols x rows")
+parser.add_argument('-resize', dest="RESIZE_TYPE", default="fill", help="Resize type: contain or fill")
 parser.add_argument('-out', dest="OUTPUT_FILE", default="output/photographic_matrix.jpg", help="File for output")
 a = parser.parse_args()
 
@@ -40,7 +41,10 @@ for xy, fn in zip(grid, filenames):
     x = int(round(col * tileW))
     y = int(round(row * tileH))
     im = Image.open(fn)
-    im = fillImage(im, tileW, tileH)
+    if a.RESIZE_TYPE == "fill":
+        im = fillImage(im, tileW, tileH)
+    else:
+        im = containImage(im, tileW, tileH)
     baseImage.paste(im, (x, y))
     printProgress(i+1, fileCount)
     i += 1

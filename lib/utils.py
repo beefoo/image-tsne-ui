@@ -4,6 +4,40 @@ from PIL import Image
 import re
 import sys
 
+def containImage(img, w, h, resampleType="default", bgcolor=[0,0,0]):
+    resampleType = Image.LANCZOS if resampleType=="default" else resampleType
+    vw, vh = img.size
+
+    if vw == w and vh == h:
+        return img
+
+    # create a base image
+    w = roundInt(w)
+    h = roundInt(h)
+    if img.mode=="RGBA" and len(bgcolor)==3:
+        bgcolor.append(0)
+    baseImg = Image.new(mode=img.mode, size=(w, h), color=tuple(bgcolor))
+
+    ratio = 1.0 * w / h
+    vratio = 1.0 * vw / vh
+
+    # first, resize video
+    newW = w
+    newH = h
+    pasteX = 0
+    pasteY = 0
+    if vratio > ratio:
+        newH = w / vratio
+        pasteY = roundInt((h-newH) * 0.5)
+    else:
+        newW = h * vratio
+        pasteX = roundInt((w-newW) * 0.5)
+
+    # Lanczos = good for downsizing
+    resized = img.resize((roundInt(newW), roundInt(newH)), resample=resampleType)
+    baseImg.paste(resized, (pasteX, pasteY))
+    return baseImg
+
 def fillImage(img, w, h):
     vw, vh = img.size
     if vw == w and vh == h:
