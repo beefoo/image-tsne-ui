@@ -1,0 +1,10 @@
+#
+####### requirements.txt #######
+#
+numpy
+scipy
+Pillow
+scikit-learn
+tensorflow
+MulticoreTSNE
+rasterfairy-py3
