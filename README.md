@@ -1,6 +1,6 @@
-# Image Collection Visualizer
+# Image Collection TSNE Visualizer
 
-Visualizing [AMNH](https://www.amnh.org/)'s [Photographic Collection](http://lbry-web-007.amnh.org/digital/collections/show/2) with machine learning and [Library](https://www.amnh.org/research/research-library) metadata.
+A basic workflow and UI for visualizing an image collection using TSNE.
 
 ## Requirements
 
