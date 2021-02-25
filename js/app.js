@@ -1,5 +1,9 @@
 'use strict';
 
+_.templateSettings = {
+  interpolate: /\{(.+?)\}/g
+};
+
 function floorToNearest(value, nearest) {
   return Math.floor(value / nearest) * nearest;
 }
@@ -36,13 +40,11 @@ function norm(value, a, b){
 
 var App = (function() {
 
-  var opt, metadata;
-
   function App(config) {
     var defaults = {
-      metadataUrl: "data/photographic_images.json"
+      metadataUrl: "data/metadata.json"
     };
-    opt = $.extend({}, defaults, config);
+    this.opt = $.extend({}, defaults, config);
     this.init();
   }
 
@@ -56,23 +58,21 @@ var App = (function() {
   }
 
   App.prototype.init = function(){
-    this.loadPanzoom();
-    this.loadListeners();
     this.loadData();
 
-    if (opt.debug) this.loadDebug();
+    if (this.opt.debug) this.loadDebug();
   };
 
   App.prototype.loadData = function(){
     var _this = this;
-    var dataPromise = loadJSONData(opt.metadataUrl);
+    var dataPromise = loadJSONData(this.opt.metadataUrl);
     $.when(dataPromise).done(function(results){
       _this.onDataLoad(results);
     });
   };
 
   App.prototype.loadDebug = function(){
-    $debug = $("#debug");
+    var $debug = $("#debug");
     $debug.addClass("active");
   };
 
@@ -86,31 +86,38 @@ var App = (function() {
     });
 
     $(window).on("resize", function(){
-      _this.datePicker && _this.datePicker.onResize();
-      _this.treeMap && _this.treeMap.onResize();
       _this.panzoom.onResize();
     });
   };
 
-  App.prototype.loadPanzoom = function(){
-    this.panzoom = new PanZoom({});
-  };
-
   App.prototype.onDataLoad = function(results){
-    metadata = results;
+    var urlTemplate = false;
+    if (results.urlPattern) {
+      urlTemplate = _.template(results.urlPattern);
+    }
+    var fields = results.fields;
 
-    // parse years
-    metadata.yearStrings = _.map(metadata.years, function(yRange){
-      var yStr = "";
-      var count = yRange.length
-      if (count > 1) yStr = yRange[0]+"-"+yRange[1];
-      else if (count > 0) yStr = ""+yRange[0];
-      return yStr;
+    var metadata = _.map(results.values, function(row, i){
+      return _.map(row, function(col, j){
+        if (col===0) {
+          return { title: '', url: '' };
+        }
+        var item = _.object(fields, col);
+        if (urlTemplate !== false) {
+          item.url = urlTemplate(item);
+        }
+        return item;
+      });
     });
+    metadata = _.flatten(metadata, 1);
 
+    this.panzoom = new PanZoom({
+      cols: results.cols,
+      rows: results.rows,
+      tileSize: results.tileSize
+    });
     this.panzoom.setMetadata(metadata);
-    this.datePicker = new DatePicker({data: metadata.years});
-    this.treeMap = new TreeMap({data: metadata.subjectMeta});
+    this.loadListeners();
   };
 
   return App;

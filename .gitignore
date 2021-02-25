@@ -7,8 +7,8 @@ images/*
 node_modules/
 package-lock.json
 
-# Remove these if you want to commit (a large number of ) generated tiles and data to the repository
+# Comment these out to commit generated tiles and data to repository
 img/tiles_files/*
 !img/tiles_files/.keep
-data/generated/*
-!data/generated/.keep
+data/metadata.json
+*.dzi

@@ -5,28 +5,28 @@ import glob
 import math
 import numpy as np
 import os
+import pickle
 from PIL import Image
 from pprint import pprint
-import rasterfairy
 import sys
 
 from lib.utils import *
 
 # input
 parser = argparse.ArgumentParser()
-parser.add_argument('-in', dest="INPUT_FILE", default="data/photographic_tsne.csv", help="Input csv file")
+parser.add_argument('-in', dest="INPUT_FILE", default="output/photographic_grid.p", help="Input grid file")
 parser.add_argument('-im', dest="IMAGE_FILES", default="images/photographic_thumbnails/*.jpg", help="Input file pattern")
 parser.add_argument('-tile', dest="TILE_SIZE", default="128x128", help="Tile size in pixels")
-parser.add_argument('-resize', dest="RESIZE_TYPE", default="fill", help="Resize type: contain or fill")
+parser.add_argument('-resize', dest="RESIZE_TYPE", default="contain", help="Resize type: contain or fill")
 parser.add_argument('-out', dest="OUTPUT_FILE", default="output/photographic_matrix.jpg", help="File for output")
 a = parser.parse_args()
 
 tileW, tileH = tuple([int(t) for t in a.TILE_SIZE.split("x")])
-model = np.loadtxt(a.INPUT_FILE, delimiter=",")
-count = len(model)
 
-print("Determining grid assignment...")
-gridAssignment = rasterfairy.transformPointCloud2D(model)
+gridAssignment = None
+with open(a.INPUT_FILE, "rb") as f:
+    gridAssignment = pickle.load(f)
+
 grid, gridShape = gridAssignment
 print("Resulting shape: %s x %s" % gridShape)
 gridW, gridH = gridShape

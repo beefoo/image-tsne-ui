@@ -40,6 +40,9 @@ def containImage(img, w, h, resampleType="default", bgcolor=[0,0,0]):
     baseImg.paste(resized, (pasteX, pasteY))
     return baseImg
 
+def createLookup(arr, key):
+    return dict([(str(item[key]), item) for item in arr])
+
 def fillImage(img, w, h):
     vw, vh = img.size
     if vw == w and vh == h:
