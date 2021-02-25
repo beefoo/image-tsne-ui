@@ -50,6 +50,7 @@ var PanZoom = (function() {
         prefixUrl: opt.prefixUrl,
         tileSources: opt.tileSources,
         homeFillsViewer: true,
+        minZoomImageRatio: 0.45
         // animationTime: 0
     });
 
