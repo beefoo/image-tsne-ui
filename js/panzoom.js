@@ -4,7 +4,7 @@ var PanZoom = (function() {
 
   var viewer, tracker, opt;
   var imageW, imageH, cellW, cellH, ncellW, ncellH;
-  var filterCtx, filterImData, filterData, minYear, maxYear;
+  var filterCtx, filterImData, filterData, minYear, maxYear, queryText;
   var filterTexture, filterSprite, spriteW, spriteH;
   var lastWebPoint, isAnimating, animateTimeout, isTouch;
   var metadata, currentDataIndex;
@@ -54,6 +54,8 @@ var PanZoom = (function() {
     });
 
     isTouch = isTouchDevice();
+
+    queryText = '';
 
     if (opt.debug) this.loadDebug();
   };
@@ -125,6 +127,12 @@ var PanZoom = (function() {
         _this.onAnimation();
       });
     });
+
+
+    $(document).on("search.submit", function(e, text) {
+      // console.log(index);
+      _this.onSearchSubmit(text);
+    });
   };
 
   PanZoom.prototype.loadOverlay = function(){
@@ -180,13 +188,17 @@ var PanZoom = (function() {
   PanZoom.prototype.onFilter = function(fdata){
     if (filterData===undefined) return;
 
+    var isSearch = queryText.length > 0;
+
     for (var row=0; row<opt.rows; row++) {
       for (var col=0; col<opt.cols; col++) {
         var i = row * opt.cols + col;
         var r=0, g=0, b=0, a=0;
-        // if (yearFilterResults[i] < 1 || subjectFilterResults[i] < 1) {
-        //   a = 200;
-        // }
+        if (isSearch) {
+          if (!metadata[i].searchText.includes(queryText)) {
+            a = 200;
+          }
+        }
         filterData[i*4] = r;
         filterData[i*4+1] = g;
         filterData[i*4+2] = b;
@@ -212,6 +224,12 @@ var PanZoom = (function() {
     var h = $el.height();
     pixiApp.renderer.resize(w, h);
     this.transformOverlay();
+  };
+
+  PanZoom.prototype.onSearchSubmit = function(text){
+    queryText = text.trim().toLowerCase();
+    this.onFilter();
+
   };
 
   PanZoom.prototype.renderDebug = function(details){

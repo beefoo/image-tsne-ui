@@ -307,3 +307,22 @@ a.toggle-link {
 .description a {
   color: white;
 }
+
+.search-form {
+  display: block;
+  position: absolute;
+  z-index: 1000000;
+  bottom: 10px;
+  right: 0;
+  display: flex;
+  font-size: 2rem;
+}
+.search-form input {
+  border: 1px solid black;
+}
+.search-form button {
+  color: white;
+  background: #004BB4;
+  border: 1px solid #004BB4;
+  margin-right: 10px;
+}
